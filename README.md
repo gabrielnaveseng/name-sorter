@@ -24,7 +24,7 @@ dotnet run --project NameSorter -- <path-to-input-file>
 Example:
 
 ```bash
-dotnet run --project NameSorter -- NameSorter/unsorted-names-list.txt
+dotnet run --project NameSorter -- unsorted-names-list.txt
 ```
 
 This writes `sorted-names-list.txt` in the current working directory and prints
