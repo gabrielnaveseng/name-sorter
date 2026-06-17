@@ -30,5 +30,6 @@ public class Program
             {
                 services.AddSingleton<IOrderNamesService, OrderNamesService>();
                 services.AddSingleton<IPersonNameRepository, PersonNameFileRepository>();
+                services.AddSingleton<IOutputWriter, OutputWriter>();
             });
 }
