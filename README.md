@@ -44,6 +44,12 @@ Run the unit tests:
 dotnet test
 ```
 
+Run the integration test:
+
+```bash
+dotnet test --filter Category=Integration
+```
+
 Design notes
 - Architecture: Ports & Adapters (Application, Domain, Infrastructure layers).
 - `PersonName` is a domain record. Parsing and file IO live in adapters.

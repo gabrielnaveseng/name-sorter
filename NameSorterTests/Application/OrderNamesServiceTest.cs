@@ -62,16 +62,16 @@ public class OrderNamesServiceTest
         var inputPath = "empty.txt";
         var outputPath = "output.txt";
         
-        mockFileAccessRepository.Setup(repo => repo.ReadPersonNamesFromFile(inputPath)).Returns([]);
-        
+        mockFileAccessRepository.Setup(repo => repo.ReadPersonNamesFromFile(inputPath)).Returns(new List<PersonName>());
+
         // Act
         orderNamesService.OrderNamesInFile(inputPath, outputPath);
-        
+
         // Assert
         mockFileAccessRepository.Verify(repo => repo.WritePersonNamesToFile(
             It.Is<IEnumerable<PersonName>>(names => !names.Any()),
             outputPath), Times.Once);
-        
+
         mockOutputWriter.Verify(writer => writer.WriteLine(It.IsAny<string>()), Times.Never);
     }
 
