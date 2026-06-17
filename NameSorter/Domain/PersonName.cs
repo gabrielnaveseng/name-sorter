@@ -1,10 +1,8 @@
 namespace NameSorter.Domain
 {
-    public record PersonName(IEnumerable<string> givenNames, string lastName)
+    public record PersonName(IReadOnlyList<string> GivenNames, string LastName)
     {
-        public IEnumerable<string> GivenNames { get; } = givenNames;
-        public string LastName { get; } = lastName;
-        public string FullName => $"{string.Join(" ", GivenNames)} {LastName}";
+        public string FullName => string.Join(" ", GivenNames.Append(LastName)).Trim();
         public string GivenNamesText => string.Join(" ", GivenNames);
     }
 }

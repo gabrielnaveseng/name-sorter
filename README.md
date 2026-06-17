@@ -8,6 +8,8 @@ Features
 - Read an input file containing one name per line (given names followed by last name).
 - Sort by last name, then by given names (supports up to 3 given names).
 - Write sorted output to `sorted-names-list.txt` and print results to console.
+- Always generate an error file `invalid-names-list.txt` containing any invalid
+	name entries (or an empty file when none exist).
 
 Quick start
 
@@ -28,12 +30,24 @@ dotnet run --project NameSorter -- NameSorter/unsorted-names-list.txt
 This writes `sorted-names-list.txt` in the current working directory and prints
 the sorted names to stdout.
 
+The application also writes `invalid-names-list.txt` to the current working
+directory. That file contains any parsed names that were considered invalid
+because they have missing components (e.g. no given names or last name) or
+have more than the allowed number of given names. The file is created even if
+there are no invalid names (it will be empty in that case).
+
 Testing
 
 Run the unit tests:
 
 ```bash
 dotnet test
+```
+
+Run the integration test:
+
+```bash
+dotnet test --filter Category=Integration
 ```
 
 Design notes
