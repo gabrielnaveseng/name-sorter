@@ -13,11 +13,10 @@ namespace NameSorter.Application.Services
         {
             var personNames = _fileAccessRepository.ReadPersonNamesFromFile(inputPath);
             
-            personNames = ValidatePersonNames(personNames);
-
-            var orderedNames = personNames
+            var orderedNames = FilterInvalidNames(personNames)
                 .OrderBy(p => p.LastName)
-                .ThenBy(p => p.GivenNamesText);
+                .ThenBy(p => p.GivenNamesText)
+                .ToList();
 
             _fileAccessRepository.WritePersonNamesToFile(orderedNames, outputPath);
 
@@ -27,17 +26,16 @@ namespace NameSorter.Application.Services
             }
         }
 
-        private IEnumerable<PersonName> ValidatePersonNames(IEnumerable<PersonName> personNames)
+        private IEnumerable<PersonName> FilterInvalidNames(IList<PersonName> personNames)
         {
             var invalidNames = personNames.Where(name => string.IsNullOrWhiteSpace(name.LastName)
                                                 || string.IsNullOrWhiteSpace(name.GivenNamesText)
-                                                || name.GivenNames.Count() > 3);
-
-            foreach (var invalidName in invalidNames)
-            {
-                _outputWriter.WriteLine($"Invalid name format: '{invalidName.FullName}'. Each name must have a last name and 1 to 3 given names.");
-            }
-
+                                                || name.GivenNames.Count() > 3).ToList();
+            
+            var errorFilePath = "invalid-names-list.txt";
+            
+            _fileAccessRepository.WritePersonNamesToFile(invalidNames, errorFilePath);
+            
             return personNames.Except(invalidNames);
         }
     }

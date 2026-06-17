@@ -34,15 +34,21 @@ public class OrderNamesServiceTest
         
         mockFileAccessRepository.Setup(repo => repo.ReadPersonNamesFromFile(inputPath)).Returns(personNames);
         
+        var errorFilePath = "invalid-names-list.txt";
         // Act
         orderNamesService.OrderNamesInFile(inputPath, outputPath);
         
         // Assert
         mockFileAccessRepository.Verify(repo => repo.WritePersonNamesToFile(
-            It.Is<IEnumerable<PersonName>>(names => names.ElementAt(0).FullName == "Alice Doe" &&
+            It.Is<IEnumerable<PersonName>>(names => names.Any() &&
+                                                  names.ElementAt(0).FullName == "Alice Doe" &&
                                                   names.ElementAt(1).FullName == "John Doe" &&
                                                   names.ElementAt(2).FullName == "Jane Smith"),
             outputPath), Times.Once);
+        
+        mockFileAccessRepository.Verify(repo => repo.WritePersonNamesToFile(
+            It.Is<IEnumerable<PersonName>>(names => !names.Any()),
+            errorFilePath), Times.Once);
         
         mockOutputWriter.Verify(writer => writer.WriteLine("Alice Doe"), Times.Once);
         mockOutputWriter.Verify(writer => writer.WriteLine("John Doe"), Times.Once);
@@ -88,7 +94,7 @@ public class OrderNamesServiceTest
         
         // Assert
         mockFileAccessRepository.Verify(repo => repo.WritePersonNamesToFile(
-            It.Is<IEnumerable<PersonName>>(names => names.ElementAt(0).FullName == "John Doe"),
+            It.Is<IEnumerable<PersonName>>(names => names.Any() && names.ElementAt(0).FullName == "John Doe"),
             outputPath), Times.Once);
         
         mockOutputWriter.Verify(writer => writer.WriteLine("John Doe"), Times.Once);
@@ -115,7 +121,7 @@ public class OrderNamesServiceTest
         
         // Assert
         mockFileAccessRepository.Verify(repo => repo.WritePersonNamesToFile(
-            It.Is<IEnumerable<PersonName>>(names => names.ElementAt(0).FullName == "John Doe" &&
+            It.Is<IEnumerable<PersonName>>(names => names.Any() && names.ElementAt(0).FullName == "John Doe" &&
                                                   names.ElementAt(1).FullName == "John Doe" &&
                                                   names.ElementAt(2).FullName == "Jane Smith"),
             outputPath), Times.Once);
@@ -145,7 +151,7 @@ public class OrderNamesServiceTest
         
         // Assert
         mockFileAccessRepository.Verify(repo => repo.WritePersonNamesToFile(
-            It.Is<IEnumerable<PersonName>>(names => names.ElementAt(0).FullName == "Alice Marie Doe" &&
+            It.Is<IEnumerable<PersonName>>(names => names.Any() && names.ElementAt(0).FullName == "Alice Marie Doe" &&
                                                   names.ElementAt(1).FullName == "John Michael Doe" &&
                                                   names.ElementAt(2).FullName == "Jane Ann Smith"),
             outputPath), Times.Once);
@@ -172,19 +178,21 @@ public class OrderNamesServiceTest
         
         mockFileAccessRepository.Setup(repo => repo.ReadPersonNamesFromFile(inputPath)).Returns(personNames);
         
+        var errorFilePath = "invalid-names-list.txt";
+
         // Act
         orderNamesService.OrderNamesInFile(inputPath, outputPath);
         
         // Assert
         mockFileAccessRepository.Verify(repo => repo.WritePersonNamesToFile(
-            It.Is<IEnumerable<PersonName>>(names => names.ElementAt(0).FullName == "John Doe" &&
+            It.Is<IEnumerable<PersonName>>(names => names.Any() && names.ElementAt(0).FullName == "John Doe" &&
                                                   !names.Any(n => n.FullName == "Smith") &&
                                                   !names.Any(n => n.FullName == "Alice") &&
                                                   !names.Any(n => n.FullName == "Bob Michael James David Johnson")),
             outputPath), Times.Once);
 
-        mockOutputWriter.Verify(writer => writer.WriteLine("Invalid name format: ' Smith'. Each name must have a last name and 1 to 3 given names."), Times.Once);
-        mockOutputWriter.Verify(writer => writer.WriteLine("Invalid name format: 'Alice '. Each name must have a last name and 1 to 3 given names."), Times.Once);
-        mockOutputWriter.Verify(writer => writer.WriteLine("Invalid name format: 'Bob Michael James David Johnson'. Each name must have a last name and 1 to 3 given names."), Times.Once);
+        mockFileAccessRepository.Verify(repo => repo.WritePersonNamesToFile(
+            It.Is<IEnumerable<PersonName>>(names => names.Any()),
+            errorFilePath), Times.Once);
     }
 }

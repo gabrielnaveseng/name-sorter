@@ -5,7 +5,7 @@ namespace NameSorter.Infrastructure
 {
     public class PersonNameFileRepository : IPersonNameRepository
     {
-        public IEnumerable<PersonName> ReadPersonNamesFromFile(string filePath)
+        public IList<PersonName> ReadPersonNamesFromFile(string filePath)
         {
             string[] lines = ReadAllLines(filePath);
 
@@ -14,8 +14,8 @@ namespace NameSorter.Infrastructure
                 var parts = line.Split(' ');
                 var lastName = parts.Last();
                 var givenNames = parts.Take(parts.Length - 1);
-                return new PersonName(givenNames, lastName);
-            });
+                return new PersonName(givenNames.ToList(), lastName);
+            }).ToList();
         }
 
         public virtual string[] ReadAllLines(string filePath) => File.ReadAllLines(filePath);
